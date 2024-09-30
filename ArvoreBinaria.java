@@ -124,7 +124,6 @@ public class ArvoreBinaria {
         }
     }
 
-
     private No maisEsquerdaPossivel(No pai, No filhoAtual) {
         if (filhoAtual.esquerda == null)
             return pai;
@@ -135,7 +134,7 @@ public class ArvoreBinaria {
         printarArvore(raiz, "", false);
     }
 
-    public void printarArvore(No no, String prefixo, boolean Esquerda) {
+    private void printarArvore(No no, String prefixo, boolean Esquerda) {
         if (no != null) {
             System.out.println(prefixo + (Esquerda ? "├── " : "└── ") + no.valor);
             printarArvore(no.esquerda, prefixo + (Esquerda ? "│   " : "    "), true);
@@ -143,38 +142,53 @@ public class ArvoreBinaria {
         }
     }
 
-    public int contarNos(No no) {
+    public int contarNos() {
+        return contarNos(raiz);
+    }
+
+    private int contarNos(No no) {
         if (no == null) {
             return 0;
         }
         return 1 + contarNos(no.esquerda) + contarNos(no.direita);
     }
 
-    public int contarNosNaoFolha(No no) {
+    public int contarNosNaoFolha() {
+        return contarQuantidadeNosNaoFolha(raiz);
+    }
+
+    private int contarQuantidadeNosNaoFolha(No no) {
         if (no == null) {
             return 0;
         }
         if (no.esquerda == null && no.direita == null) {
             return 0;
         }
-        return 1 + contarNosNaoFolha(no.esquerda) + contarNosNaoFolha(no.direita);
+        return 1 + contarQuantidadeNosNaoFolha(no.esquerda) + contarQuantidadeNosNaoFolha(no.direita);
     }
 
-    public int contarFolhas(No no) {
+    public int contarFolhas() {
+        return contaQuantFolhas(raiz);
+    }
+
+    private int contaQuantFolhas(No no) {
         if (no == null) {
             return 0;
         }
         if (no.esquerda == null && no.direita == null) {
             return 1;
         }
-        return contarFolhas(no.esquerda) + contarFolhas(no.direita);
+        return contaQuantFolhas(no.esquerda) + contaQuantFolhas(no.direita);
     }
 
-    public No removerPares(No no) {
+    public No removerTodosPares() {
+        return removerPares(raiz);
+    }
+
+    private No removerPares(No no) {
         if (no != null) {
-            System.out.println("No valor"+no.valor);
             if (no.valor % 2 == 0) {
-                System.out.println("Removendo valor "+no.valor);
+                System.out.println("Removendo valor " + no.valor);
                 remover(no.valor);
             }
             removerPares(no.esquerda);
@@ -184,37 +198,45 @@ public class ArvoreBinaria {
     }
 
     public int calculaAltura() {
-        return calculaAltura(raiz);// - 1;
+        return Altura(raiz);
     }
 
-    public int calculaAltura(No raiz) {
+    private int Altura(No raiz) {
         if (raiz == null) {
             return -1;
         }
-        int esquerdaAltura = calculaAltura(raiz.esquerda);
-        int direitaAltura = calculaAltura(raiz.direita);
+        int esquerdaAltura = Altura(raiz.esquerda);
+        int direitaAltura = Altura(raiz.direita);
         if (esquerdaAltura > direitaAltura) {
             return esquerdaAltura + 1;
         } else {
             return direitaAltura + 1;
-        }        
+        }
     }
 
     public void espelhaArvore() {
         arvoreEspelhada(raiz);
     }
 
-    public void arvoreEspelhada(No no) {
+    private void arvoreEspelhada(No no) {
         if (no != null) {
             No aux = no.esquerda;
             no.esquerda = no.direita;
             no.direita = aux;
-            // FUNCIONA TAMBÉM COM A CHAMADA DOS MÉTODOS ABAIXO
-            //arvoreEspelhada(no.esquerda);
-            //arvoreEspelhada(no.direita);
+
+            arvoreEspelhada(no.esquerda);
+            arvoreEspelhada(no.direita);
         }
     }
-    public void preOrdemSemRecursividade(No no) {
+
+    public void encaminhamentosSemRecursividade() {
+        preOrdemSemRecursividade(raiz);
+        orderSemRecursividade(raiz);
+        posOrdemSemRecursividade(raiz);
+    }
+
+    private void preOrdemSemRecursividade(No no) {
+        System.out.println("Printando pre ordem sem recursividade -- RAIZ - ESQUERDA - DIREITA -- RED");
         Pilha pilha = new Pilha();
         pilha.empilhar(new Celula(no));
         while (!pilha.vazia()) {
@@ -228,24 +250,34 @@ public class ArvoreBinaria {
                 pilha.empilhar(new Celula(atual.esquerda));
             }
         }
+        System.out.println("Fim ^_^");
     }
-    public void posOrdemSemRecursividade(No no) {
+
+    private void posOrdemSemRecursividade(No no) {
+        System.out.println("Printando pos ordem sem recursividade -- ESQUERDA - DIREITA - RAIZ -- ERD");
         Pilha pilha = new Pilha();
+        Pilha pilhaAuxPrint = new Pilha();
         pilha.empilhar(new Celula(no));
         while (!pilha.vazia()) {
             Celula celula = pilha.desempilhar();
             No atual = celula.no;
-            if (atual.direita != null) {
-                pilha.empilhar(new Celula(atual.direita));
-            }
+            pilhaAuxPrint.empilhar(new Celula(atual));
             if (atual.esquerda != null) {
                 pilha.empilhar(new Celula(atual.esquerda));
             }
-            System.out.println(atual.valor);
+            if (atual.direita != null) {
+                pilha.empilhar(new Celula(atual.direita));
+            }
         }
+        while (!pilhaAuxPrint.vazia()) {
+            Celula celulaAux = pilhaAuxPrint.desempilhar();
+            System.out.println(celulaAux.no.valor);
+        }
+        System.out.println("Fim ^_^");
     }
-    public void orderSemRecursividade(No no) {
-        System.out.println("Printando em ordem sem recursividade");
+
+    private void orderSemRecursividade(No no) {
+        System.out.println("Printando em ordem sem recursividade -- ESQUERDA - RAIZ - DIREITA -- ERD");
         Pilha pilha = new Pilha();
         No aux = no;
         while (aux != null || !pilha.vazia()) {
@@ -257,7 +289,6 @@ public class ArvoreBinaria {
             System.out.println(aux.valor);
             aux = aux.direita;
         }
-        System.out.println("Fim");
+        System.out.println("Fim ^_^");
     }
-    
 }
