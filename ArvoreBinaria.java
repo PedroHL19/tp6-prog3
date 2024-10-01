@@ -46,82 +46,93 @@ public class ArvoreBinaria {
         }
     }
 
-    public No encontrarElemento(No atual, int valor) {
-        if (atual == null)
+    private No encontrarElemento(No atual, int valor) {
+
+        if (atual == null) {
             return null;
+        }
         if (valor > atual.valor) {
             if (atual.direita != null) {
-                if (atual.direita.valor == valor)
+                if (atual.direita.valor == valor) {
                     return atual;
+                }
             }
         } else {
             if (atual.esquerda != null) {
-                if (atual.esquerda.valor == valor)
+                if (atual.esquerda.valor == valor) {
                     return atual;
+                }
             }
         }
-        if (atual.valor > valor)
-            return encontrarElemento(atual.direita, valor);
-        if (atual.valor < valor)
+
+        if (atual.valor > valor) {
             return encontrarElemento(atual.esquerda, valor);
+        }
+        if (atual.valor < valor) {
+            return encontrarElemento(atual.direita, valor);
+        }
         return null;
     }
 
-    public boolean remover(int valor) {
-        if (raiz == null)
-            return false;
-        else {
+    public void remover(int valor) {
+        if (raiz != null) {
             No pai;
             No noX;
-
             if (raiz.valor == valor) {
                 pai = raiz;
                 noX = raiz;
+
             } else {
                 pai = encontrarElemento(raiz, valor);
-                if (pai == null)
-                    return false;
-                if (pai.valor < valor)
+                if (pai.valor < valor) {
                     noX = pai.direita;
-                else
+                } else {
                     noX = pai.esquerda;
+                }
             }
 
             if (noX.direita == null && noX.esquerda == null) {
-                if (pai.valor < valor)
+                if (pai.valor < valor) {
                     pai.direita = null;
-                else
-                    pai.esquerda = null;
-            } else if (noX.direita == null || noX.esquerda == null) {
-                if (noX.direita == null) {
-                    if (pai.valor < valor)
-                        pai.direita = noX.esquerda;
-                    else
-                        pai.esquerda = noX.esquerda;
                 } else {
-                    if (pai.valor < valor)
-                        pai.direita = noX.direita;
-                    else
-                        pai.esquerda = noX.direita;
+                    pai.esquerda = null;
                 }
-                noX.direita = null;
-                noX.esquerda = null;
             } else {
-                No noPaiDireitaEsquerda = maisEsquerdaPossivel(noX, noX.direita);
-                No substituto = noPaiDireitaEsquerda.esquerda;
-                noPaiDireitaEsquerda.esquerda = null;
+                if (noX.direita != null && noX.esquerda != null) {
+                    No direitaesquerdapai = maisEsquerdaPossivel(noX, noX.direita);
+                    No substitute = direitaesquerdapai.esquerda;
+                    direitaesquerdapai.esquerda = null;
+                    substitute.direita = noX.direita;
+                    substitute.esquerda = noX.esquerda;
+                    noX.esquerda = null;
+                    noX.direita = null;
+                    if (pai.valor < valor) {
+                        pai.direita = substitute;
+                    } else {
+                        pai.esquerda = substitute;
+                    }
+                } else {
+                    if (noX.direita == null) {
+                        if (pai.valor > valor) {
+                            pai.esquerda = noX.esquerda;
+                        } else {
+                            pai.direita = noX.esquerda;
+                        }
+                        noX.esquerda = null;
+                    } else if (noX.esquerda == null) {
+                        if (pai.valor > valor) {
+                            pai.esquerda = noX.direita;
+                        } else {
+                            pai.direita = noX.direita;
+                        }
+                        noX.direita = null;
+                    }
 
-                substituto.direita = noX.direita;
-                substituto.esquerda = noX.esquerda;
-                noX.direita = null;
-                noX.esquerda = null;
-                if (pai.valor < valor)
-                    pai.direita = substituto;
-                else
-                    pai.esquerda = substituto;
+                }
             }
-            return true;
+
         }
+
     }
 
     private No maisEsquerdaPossivel(No pai, No filhoAtual) {
@@ -175,12 +186,12 @@ public class ArvoreBinaria {
 
     private No removerPares(No no) {
         if (no != null) {
-            if (no.valor % 2 == 0) {
-                System.out.println("Removendo valor " + no.valor);
-                remover(no.valor);
-            }
             removerPares(no.esquerda);
             removerPares(no.direita);
+            if (no.valor % 2 == 0) {
+                // System.out.println("Removendo: " + no.valor);
+                remover(no.valor);
+            }
         }
         return no;
     }
