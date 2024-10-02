@@ -290,4 +290,15 @@ public class ArvoreBinaria {
         }
         System.out.println("Fim ^_^");
     }
+    public void printarArvore() {
+        printarArvore(raiz, "", false);
+    }
+
+    private void printarArvore(No no, String prefixo, boolean Esquerda) {
+        if (no != null) {
+            System.out.println(prefixo + (Esquerda ? "├── " : "└── ") + no.valor);
+            printarArvore(no.esquerda, prefixo + (Esquerda ? "│   " : "    "), true);
+            printarArvore(no.direita, prefixo + (Esquerda ? "│   " : "    "), false);
+        }
+    }
 }
